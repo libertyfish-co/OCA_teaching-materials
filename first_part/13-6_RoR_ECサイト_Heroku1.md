@@ -59,7 +59,7 @@ end
 
 `Gemfile`
 ``` ruby
-    ruby '2.7.4'
+    ruby '2.7.7'
          ・
          ・
     group :development, :test do
