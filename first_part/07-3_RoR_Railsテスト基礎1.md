@@ -33,6 +33,13 @@ Minitest::Testの他にRSpecというテスティングツールもあります�
 
 ### 7.3.2 RSpecの環境構築
 
+テスト基礎用のアプリケーションを作成しましょう。
+
+```bash
+cd
+rails new rspec_mockups
+```
+
 #### 必要なgemのインストール
 
 RSpecを使ったテストの実装環境を整えましょう。RSpecは強力なテスティングツールですが、テストデータの作成には長けていません。もちろん、腕に自信のある人は自作しても良いですが、OSSの文化では「車輪の再発明」は避ける習慣があります。今回は`rspec-rails`、`factory_bot_rails`、`gimei`の3つを利用して実装します。
@@ -127,6 +134,6 @@ Minitest::TestがRailsでは標準のテスティングツールなのでRSpec�
 
 前章で説明があったとおり、testフォルダはMinitest::Testに関連するファイルがありますが今回はRSpecを利用してテストを実装しますので、削除します。
 
-```
-  $ rm -r test
+```bash
+rm -r test
 ```

@@ -60,20 +60,20 @@ Active StorageはRails 5.2から利用できるgemです。
 
  6. テーブル同士の関連付けを行います
 
- - _app/models/user.rb
+ - app/models/user.rb
 
     ```ruby
     class User < ApplicationRecord
-        has_one_attached :photo
+      has_one_attached :photo
     end
     ```
  7. Strong Parameterを設定します
 
- - _app/controllers/users_controller.rb
+ - app/controllers/users_controller.rb
 
     ```ruby
     def user_params
-        params.require(:user).permit(:name, :photo)
+      params.require(:user).permit(:name, :photo)
     end
     ```
  8. viewファイルに画像をアップロードする項目を追加します
@@ -104,6 +104,7 @@ Active StorageはRails 5.2から利用できるgemです。
  - app/views/users/show.html.erb
 
     ```html
+   (省略)
     <p>
       <strong>Name:</strong>
       <%= @user.name %>
@@ -115,6 +116,8 @@ Active StorageはRails 5.2から利用できるgemです。
         <%= image_tag @user.photo %>
       <% end %>
     </p>
+
+   (省略)
     ```
 
     ※実際に画像をアップロードして確認してみましょう。

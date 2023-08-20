@@ -131,7 +131,7 @@ viewを作成します。
 
 コントローラに完了用のアクションを追加します。
 
-`app/controllers/articles_controller`
+`app/controllers/articles_controller.rb`
 
 ```
 class ArticlesController < ApplicationController

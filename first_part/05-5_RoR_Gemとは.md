@@ -64,9 +64,10 @@ Gem自体もRailsアプリと同様にgitで管理し、テストも実装
 プログラミングを長く続けていると、どうしても慣れた書き方に偏っていきます。知識を広げるにはコードリーディングが一番です。
 
 ここで、ActiveSupportの機能を1つ紹介します。紹介するコードは以下のところにあります。初めはGithubサイト上で見るのが一番見やすいかもしれません。RubyのバージョンやActiveSupportのバージョンは、みなさんが使っているものを参照してください。
-- github: https://github.com/rails/rails/blob/master/activesupport/lib/active_support/core_ext/numeric/conversions.rb
-- rbenv: ~/.rbenv/versions/2.4.2/lib/ruby/gems/2.4.0/gems/activesupport-5.1.4/lib/active_support/core_ext/numeric/conversions.rb
-- rvm: ~/.rvm/gems/ruby-2.4.2/gems/activesupport-5.1.4/lib/active_support/core_ext/numeric/conversions.rb
+
+少し古いコードになりますが、以下のURLを開いてください。
+
+- github: https://github.com/rails/rails/blob/5-1-stable/activesupport/lib/active_support/core_ext/numeric/conversions.rb
 
 ファイルを開いてすぐにわかると思いますが、`.to_s`メソッドに引数が付いています。機能の拡張です。当然、純粋なRubyにはこのような機能はありません。
 
@@ -94,7 +95,7 @@ when :phone
 
 どうも、ヘルパーとして`.number_to_phone`というものがあるようですね。興味のある方はヘルパーのコードものぞいてみてください。これらを`.to_s`にまとめた理由まではわかりませんが、RailsではこういったRubyメソッドの上書きはよくあります。
 
-さらにファイルの一番下には、Ruby2.4からBignumがFixnumと一緒になった影響で救済措置が書いてあります。仕方なく取ってつけたような感じがするのは私だけでしょうか。
+さらにファイルの一番下には、Ruby2.4からBignumがFixnumと一緒になった影響で救済措置が書いてあります。
 
 ```
 # Ruby 2.4+ unifies Fixnum & Bignum into Integer. 
@@ -113,7 +114,7 @@ $rails console
 Running via Spring preloader in process 7740
 Loading development environment (Rails 6.1.4.6)
 irb(main):001:0> 12345678.method(:to_s).source_location
-=> ["/home/user/.rbenv/version/2.7.4/lib/ruby/gems/2.7.0/gems/activesupport-6.1.4.6/lib/active_support/core_ext/numeric/conversions.rb", 109]
+=> ["/home/user/.rbenv/version/2.7.7/lib/ruby/gems/2.7.0/gems/activesupport-6.1.7.4/lib/active_support/core_ext/numeric/conversions.rb", 109]
 ```
 
 ### 5.5.3 よく使われるGemの紹介
