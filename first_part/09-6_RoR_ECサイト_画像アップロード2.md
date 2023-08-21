@@ -38,11 +38,13 @@ $ bundle install
     `app/models/user.rb`
 
     ```ruby
-    (省略)
-    def thumbnail
-      photo.variant(resize: '300x300')
+    class User < ApplicationRecord
+      has_one_attached :photo
+
+      def thumbnail
+        photo.variant(resize: '300x300')
+      end
     end
-    (省略)
     ```
 
 #### リサイズされた画像の確認 
@@ -95,6 +97,10 @@ $ bundle install
         end
       end
 
+      def thumbnail
+        photo.variant(resize: '300x300')
+      end
+
       private
 
         # (3)ここではJPEG形式の画像のみを受け入れ可能とします
@@ -134,7 +140,7 @@ $ bundle install
 
     `config/application.rb`に`RSpec`を利用する設定を記述します。
     ```ruby
-      module RspecMockups
+      module Storage
         class Application < Rails::Application
           # Don't generate system test files.
           config.generators.system_tests = nil

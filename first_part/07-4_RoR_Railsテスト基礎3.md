@@ -1,4 +1,4 @@
-## 7.4 Ruby on Rails：Railsテスト基礎 2
+## 7.4 Ruby on Rails：Railsテスト基礎 3
 
 ### 7.4.1 例題：テストの実装
 
@@ -36,15 +36,41 @@ rails db:migrate
 
 コンソールを起動します。
 
+```bash
+rails console
 ```
-  $ rails console
-  Running via Spring preloader in process 55944
-  Loading development environment (Rails 5.1.3)
-  2.4.1 :001 > FactoryBot.build :user
-   => #<User id: nil, name: "池上 羽海", phone_number: "XXX-YYYY-ZZZZ",
-   created_at: nil, updated_at: nil>
-  2.4.1 :002 >
+
+結果
 ```
+Running via Spring preloader in process 55944
+Loading development environment (Rails 6.1.7.4)
+irb(main)001:0>
+```
+
+テストデータを作成するコマンドを実行してみましょう。
+```
+FactoryBot.build :user
+```
+
+結果
+```
+=> #<User id: nil, name: "池上 羽海", phone_number: "XXX-YYYY-ZZZZ", created_at: nil, updated_at: nil>
+irb(main)002:0>
+```
+
+もう一度テストデータを作成するコマンドを実行してみましょう。
+```
+FactoryBot.build :user
+```
+
+結果
+```
+=> #<User id: nil, name: "秋田 健夫", phone_number: "XXX-YYYY-ZZZZ", created_at: nil, updated_at: nil>
+irb(main)003:0>
+```
+
+nameの値はGimeiによってランダムで作成されています。
+
 
 肝心のテストですが、利用者についてのテストは次のようになります。実際に入力してテストの結果が変更されることを確認してみましょう。
 
@@ -70,9 +96,83 @@ rails db:migrate
   end
 ```
 
+テストを実行します。
+```bash
+bin/rake
+```
+
+結果
+```
+User
+  is valid with name and phone number
+  is invalid without name
+  is invalid without phone number
+
+(中略)
+
+Finished in 0.30021 seconds (files took 1.36 seconds to load)
+16 examples, 0 failures, 12 pending
+```
+
+テストが正しく記述できていれば、0 failuresになります。
+
+ここで、テストコードを一部修正して、エラーを発生させてみましょう。
+
+先程の2つ目のテストコードはnameの値がnilのuserを作成して、userの作成が失敗することを確認していた部分を、nameに値が設定されるように修正してみましょう。
+
+```rb
+- spec/models/user_spec.rb
+  RSpec.describe User, type: :model do
+
+(中略)
+
+    it "is invalid without name" do
+      user = build(:user)
+      user.valid?
+      expect(user.errors[:name]).to include("can't be blank")
+    end
+
+(中略)
+
+  end
+```
+
+テストを実行します。
+```bash
+bin/rake
+```
+
+結果
+```
+User
+  is valid with name and phone number
+  is invalid without name (FAILED - 1)
+  is invalid without phone number
+
+(中略)
+
+Failures:
+
+  1) User is invalid without name
+     Failure/Error: expect(user.errors[:name]).to include("can't be blank")
+       expected #<ActiveModel::DeprecationHandlingMessageArray([])> to include "can't be blank"
+     # ./spec/models/user_spec.rb:12:in `block (2 levels) in <top (required)>'
+
+Finished in 0.32781 seconds (files took 1.39 seconds to load)
+16 examples, 1 failure, 12 pending
+
+Failed examples:
+
+rspec ./spec/models/user_spec.rb:9 # User is invalid without name
+```
+
+nameの値がnilでないのでuserの作成が成功し、テストの期待値(失敗)と異なるのでテスト結果がエラーになっています。
+
+エラーにならないように、もとのコードに戻しておきましょう。
+
 メソッドをひとつずつ解説するときりがありませんが、RSpecの構造は次のようになります。
 
-- `describe(context)`  
+- `describe(context)`
 引数にどのようなテストを行うか示すために、メソッド名やルーティングを記述してテストのグルーピングを行います。
 ```
   # Model の場合
@@ -93,7 +193,7 @@ rails db:migrate
     end
   end
 ```
-- `it`  
+- `it`
 期待する結果を記述します。テスト結果が期待値であるかの検証しません。
 ```
   describe "POST #create" do
@@ -104,11 +204,11 @@ rails db:migrate
     end
   end
 ```
-- `expect`  
+- `expect`
 テスト結果が期待値であるかの検証をします。構文は`expect(期待値).to マッチャ`になります。マッチャはテスト対象によってことなります。次の例では利用者が新規作成されていますので、マッチャは次の通りです。
-  - テーブルの総数は1つ増える  
+  - テーブルの総数は1つ増える
   `change(User, :count).by(1)`
-  - 新規作成に成功したら詳細ページに遷移する  
+  - 新規作成に成功したら詳細ページに遷移する
   `redirect_to(User.last)`
 ```
   describe "POST #create" do
@@ -142,7 +242,7 @@ Javascriptを利用した画面等のテストを作成します。
  ```bash
  mkdir spec/system
  ```
- 
+
  テストコードを記述する `users_spec.rb` を作成します。
 
  ```bash
@@ -154,7 +254,7 @@ SystemSpecは毎回Chromeを利用しますが、今回のE2Eテストは、Java
 
 - `spec/rails_helper.rb`
 
-```ruby
+```rb
 RSpec.configure do |config|
   #(省略)
 
@@ -172,7 +272,7 @@ end
 
 - spec/system/users_spec.rb
 
-```ruby
+```rb
 require 'rails_helper'
 
 RSpec.describe "Users", type: :system do
@@ -248,3 +348,104 @@ RSpec.describe "Users", type: :system do
   end
 end
 ```
+
+テストを実行します。
+```bash
+bin/rake
+```
+
+結果
+```
+(中略)
+
+Users
+  GET /users
+    renders new user link
+  GET /users/:id
+    renders a details of a user
+  GET /users/new
+    renders a new user form
+  GET /users/:id/edit
+    shows a details of a user
+  PATCH /users/:id/edit
+    redirects to '/users/:id'
+  DELETE /users/:id
+    redirect_to '/users'
+
+(中略)
+
+Finished in 0.6424 seconds (files took 1.35 seconds to load)
+22 examples, 0 failures, 12 pending
+```
+
+ここで、先ほどと同じようにテストコードを一部修正して、エラーを発生させてみましょう。
+
+先程の3つ目のテストコードでnameの値を設定している行を削除するか、コメント行に修正してみましょう。
+
+```rb
+
+(中略)
+
+  describe "GET /users/new" do
+    it "renders a new user form" do
+      visit users_path
+
+      click_on "New User"
+      # fill_in "Name", with: "User_Name"
+      fill_in "Phone number", with: "XXX-YYYY-ZZZZ"
+
+      click_on "Create User"
+      assert_text "User was successfully created."
+    end
+  end
+
+(中略)
+
+end
+```
+
+テストを実行します。
+```bash
+bin/rake
+```
+
+結果
+```
+(中略)
+
+Users
+  GET /users
+    renders new user link
+  GET /users/:id
+    renders a details of a user
+  GET /users/new
+    renders a new user form (FAILED - 1)
+  GET /users/:id/edit
+    shows a details of a user
+  PATCH /users/:id/edit
+    redirects to '/users/:id'
+  DELETE /users/:id
+    redirect_to '/users'
+
+(中略)
+
+Failures:
+
+  1) Users GET /users/new renders a new user form
+     Failure/Error: assert_text "User was successfully created."
+
+     Capybara::ExpectationNotMet:
+       expected to find text "User was successfully created." in "New User\n1 error prohibited this user from being saved:\nName can't be blank\nName\nPhone number\nBack"
+     # ./spec/system/users_spec.rb:31:in `block (3 levels) in <main>'
+
+Finished in 0.55425 seconds (files took 1.4 seconds to load)
+22 examples, 1 failure, 12 pending
+
+Failed examples:
+
+rspec ./spec/system/users_spec.rb:23 # Users GET /users/new renders a new user form
+```
+
+nameの値が入力されていないのでuserの作成が失敗し、テストの期待値(成功)と異なるのでテスト結果がエラーになっています。
+
+エラーにならないように、もとのコードに戻しておきましょう。

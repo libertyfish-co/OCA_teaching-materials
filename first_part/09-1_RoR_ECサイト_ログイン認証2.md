@@ -153,7 +153,7 @@ $ rails db:migrate
 get :mypage, to: 'mypage#index'
 ```
 
-次にマイページ用のコントローラーを作成いたします。
+次にマイページ用のコントローラーを作成します。
 
 ```
 $ rails generate controller mypage

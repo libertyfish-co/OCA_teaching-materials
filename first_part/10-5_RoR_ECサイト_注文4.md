@@ -45,7 +45,7 @@ end
 
 まずは、商品詳細画面とそのテストから記述します。
 
-`views/products/show.html.erb`
+`app/views/products/show.html.erb`
 
 ```ruby
 <h2 class="sub-header">商品詳細画面</h2>
@@ -82,10 +82,9 @@ end
 
 ```
 
-`views/orders/new.html.erb`
+`app/views/orders/new.html.erb`
 
 ```ruby
-・・・
 <%= form_with(model: @order, local: true, url: confirm_orders_path) do |f| %>
   <% if @order.errors.any? %>
     <div id="error_explanation">
@@ -123,7 +122,6 @@ end
     <%= f.submit '次へ', class: "btn btn-default" %>
   </div>
 <% end %>
-・・・
 ```
 
 `spec/system/products_spec.rb`
@@ -151,7 +149,7 @@ end
 `app/controllers/orders_controller.rb`
 
 ```ruby
-・・・
+class OrdersController < ApplicationController
   def create
     @order = Order.new(order_params)
 
@@ -170,7 +168,7 @@ end
     def order_params
       params.require(:order).permit(:product_id, :count, :address)
     end
-・・・
+end
 ```
 
 `spec/system/products_spec.rb`
@@ -179,8 +177,10 @@ end
 require 'rails_helper'
 
 RSpec.describe "Products", type: :system do
-  ・・・
-  
+  describe "GET /products/:id" do
+  (省略)
+  end
+
   describe "POST /orders" do
     it "renders products_path" do
       book = FactoryBot.create(:book)
