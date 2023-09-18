@@ -192,6 +192,50 @@ employee3.customers.create(name: '片原昭夫', age: 29)
   end
 ```
 
+ransack 4.0以降、コントローラでのStrong Parameterに似た仕組みとして、以下のように利用したいattributesを受け付けて、不要なattributesは受け取らないようにするための記述をするようになりました。
+
+`app/models/customer.rb`
+
+```
+  # 追加(画面で検索に利用する項目を列挙します)
+  # 検索画面の検索項目として顧客(Customer)のname, age, employee_id(社員の選択肢)が配置されているので、それらを受け付けます。
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name age employee_id]
+  end
+
+  # 追加(今回は、社員(Employee)とリレーションしているので関連を記述します)
+  # 検索画面の検索項目として、社員(Employee)のageが配置されているので、employeeを受け付けます。
+  # このコードは、顧客(Customer)なので、関連があることだけを記述して、Employeeに関する設定はEmployeeモデルで設定します。
+  def self.ransackable_associations(auth_object = nil)
+    %w[employee]
+  end
+```
+
+`app/models/employee.rb`
+
+```
+  # 追加(画面で検索に利用する項目を列挙します)
+  # 検索画面の検索項目として、社員(Employee)のageが配置されているので、それを受け付けます。
+  def self.ransackable_attributes(auth_object = nil)
+    %w[age]
+  end
+```
+
+ransack 4.0以前の場合は、他の画面のコントローラと同様に、必要な項目だけを受け付けるようにStrong Parameterの仕組みを使って、以下のように記述しましよう。
+
+```
+  def index
+    @q = Customer.ransack(q_params)
+    @customers = @q.result
+  end
+
+  private
+  def q_params
+    # 受け付ける項目を列挙します
+    params.require(:q).permit(:name, :age, ......)
+  end
+```
+
 最初に説明した通り`Customer`モデルに`ransack`メソッドが追加されているので、画面で入力した検索条件を引数にして呼び出します。
 
 `ransack`メソッドは`Ransack::Search`オブジェクトを返します。このオブジェクトはviewで利用するためインスタンス変数にセットしておきます。
