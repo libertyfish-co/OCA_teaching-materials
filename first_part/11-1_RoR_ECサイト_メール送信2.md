@@ -191,12 +191,13 @@ end
 最後にActionMailerの設定を行います。  
 各環境ファイルごとに設定が必要になります。
 下記に記載しているのは、`development`環境になります。本番環境で使用するには`config/environments/production.rb`の編集が必要です。
-今回はメール送信に、Gmailを使用しています。もし、設定を編集してもメールが届かない場合は、Gmail側の設定を確認してください。Gmailはセキュリティ対策のため、安全性が低いとみなしたアプリからのアクセスを拒否するようにデフォルトで設定されています。
-
+今回はメール送信に、Gmailを使用しています。もし、設定を編集してもメールが届かない場合は、Gmail側の設定を確認してください。Gmailはセキュリティ対策のため、安全性が低いとみなしたアプリからのアクセスを拒否するようにデフォルトで設定されています。  
+また、`config.action_mailer.raise_delivery_errors`を`true`にすることでメールが送信できない場合のエラーを出力することができます。  
 
 `config/environments/development.rb`
 
 ```
+config.action_mailer.raise_delivery_errors = true
 config.action_mailer.delivery_method = :smtp
 config.action_mailer.smtp_settings = {
   address: 'smtp.gmail.com',
@@ -244,6 +245,7 @@ MAIL_PASSWORD: monkaec123
 16桁のアプリパスワードを取得することができたら、`config/environments/development.rb`を以下に変更しましょう。
 
 ```
+config.action_mailer.raise_delivery_errors = true
 config.action_mailer.delivery_method = :smtp
 config.action_mailer.smtp_settings = {
   address: 'smtp.gmail.com',
@@ -264,5 +266,33 @@ config.action_mailer.smtp_settings = {
 irb(main):001:0> test = ToDoTask.new(title:"テスト", description:"プレビュー テスト", alert_mail_address:'自身のGmailアドレス')
 irb(main):002:0> TodoTaskMailer.registration_mail(test).deliver
 ```
+
+`OpenSSL::SSL::SSLError`のエラーが発生し、メールの送信ができないことがあります。本来はセキュリティの都合上、TLS設定をするのが良いのですが、今回はエラーを回避するためにそれらのチェックを省く設定を行います。  
+以下のようにコードを修正してください。  
+
+`config/environments/development.rb`
+``` ruby
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+         ・
+      ~~ 中略 ~~
+         ・
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.gmail.com',
+    port: 587,
+    domain: 'gmail.com',
+    user_name: '自身のGmailアドレス',
+    password: '16桁のアプリログインパスワード',
+    authentication: 'plain',
+    openssl_verify_mode: 'none', #追加
+    enable_starttls_auto: true    　
+  }
+end
+```
+
+コードを修正したら、再度メールを送信してみましょう。
 
 ご自身のGmailにメールが届いていれば、設定は完了です。
