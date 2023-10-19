@@ -17,6 +17,11 @@ WebSocketを利用すると、一度確立したコネクションを利用し�
 ### 2.5.2 チャット機能の実装
 それではさっそく、ActionCableを利用した簡単なチャットの仕組みを実装してみましょう。
 
+新しくアプリを作成します。  
+```
+rails new chat_test
+```
+
 チャットページを表示するためのコントローラを追加します。
 
 ```
@@ -38,7 +43,7 @@ rails g controller chat index
 
 ここまでできたら、実際にアクセスしてみましょう。
 
-http://hogehoge/chat/index
+http://localhost:3000/chat/index
 
 入力欄とボタンが表示されています。現時点では入力してボタンをクリックしても
 同じページが表示されるだけです。
@@ -113,7 +118,12 @@ consumer.subscriptions.create("RoomChannel", {
 `app/javascript/channels/room_channel.js`
 
 ```
-var appRoom = consumer.subscriptions.create("RoomChannel", { #修正
+import consumer from "./consumer"
+
+var appRoom = consumer.subscriptions.create("RoomChannel", { // 修正
+        　・
+        　・
+});
 ```
 
 下記の記述を追加します。
@@ -123,15 +133,24 @@ var appRoom = consumer.subscriptions.create("RoomChannel", { #修正
 `app/javascript/channels/room_channel.js`
 
 ```
-document.addEventListener('DOMContentLoaded', function(){
-  const form = document.getElementById('message_form')
-  form.addEventListener('submit', function(e){
-    e.preventDefault()
-    var input = document.getElementById('message_field').value
-    appRoom.post_message(input)
-    document.getElementById('message_field').value = ''
-  })
+import consumer from "./consumer"
+
+var appRoom = consumer.subscriptions.create("RoomChannel", {
+        　・
+        　・
 });
+
+// ここから追加
+document.addEventListener('DOMContentLoaded', function(){
+  const form = document.getElementById('message_form');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var input = document.getElementById('message_field').value;
+    appRoom.post_message(input);
+    document.getElementById('message_field').value = '';
+  });
+});
+// ここまで追加
 ```
 
 試しにsubmitボタンを押下し、ブラウザのコンソールを確認してみましょう。
@@ -149,7 +168,11 @@ RoomChannel#post_message
 
 `RoomChannel`クラスの`subscribed`メソッドと`post_message`メソッドに以下の記述を追加します。
 
+`app/channels/room_channel.rb`
+
 ```
+        　・
+        　・
 def subscribed
   stream_from 'chat' # 追加
 end
@@ -157,16 +180,25 @@ end
 def post_message(data) # 修正
   ActionCable.server.broadcast 'chat', message: data['message'] # 追加
 end
+          ・
+        　・
 ```
 
 `appRoom`のオブジェクトを修正します。
 
+`app/javascript/channels/room_channel.js`
+
 ```
-receive(data) { # 修正
-  console.log(data) } # 追加
-  
-post_message: function(message) { # 修正
-  return this.perform('post_message', {message: 'chat_message'}); #修正
+        　・
+        　・
+received(data) {
+  console.log(data); // 追加
+}
+post_message: function(message) { // 修正
+  return this.perform('post_message', {message: 'chat_message'}); // 修正
+}
+          ・
+        　・
 ```
 
 ここまで記述できたら、もう一度submitボタンを押下し、ブラウザのコンソールを確認してみましょう。
@@ -187,22 +219,35 @@ post_message: function(message) { # 修正
 
 `appRoom`のオブジェクトを修正します。
 
+`app/javascript/channels/room_channel.js`
+
 ```
+        　・
+        　・
 post_message: function(message) {
-    return this.perform('post_message', {message: message});} #修正
+    return this.perform('post_message', {message: message}); // 修正
+}
+          ・
+          ・
 ```
 
 次にサーバから受けた内容をブラウザに表示するためのコードを追加します。
 クライアント側のチャンネルの`received`関数に実装します。
 受け取ったメッセージからDOMを生成してappendしています。
 
+`app/javascript/channels/room_channel.js`
+
 ```
+          ・
+          ・
 received(data) {
-  var element = document.createElement('div')
-  element.className = 'message'
-  element.innerHTML = `<p>${data.message}</p>`
-  document.getElementById('messages').appendChild(element)
+  var element = document.createElement('div');
+  element.className = 'message';
+  element.innerHTML = `<p>${data.message}</p>`;
+  document.getElementById('messages').appendChild(element);
 }
+          ・
+          ・
 ```
 
 これでブラウザの入力欄に文字を入力してsubmitボタンをクリックしてみましょう。
