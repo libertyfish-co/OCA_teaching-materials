@@ -2,14 +2,14 @@
 
 ### 14.3.1.1 Renderの本番環境の作成と設定
 ここからはRender側で本番環境の設定をしていきます。
-データベースを作成したときのようにNew+ボタンを押しましょう。  
+データベースを作成したときのように`New+`ボタンを押しましょう。  
 今度は`Web Service`を選択します。  
 ![Renderアプリ作成1](images/14-3-1-1-01.png) 
 
 "How would you like to deploy your web service?"と書かれた画面に遷移したらそのまま`Next`をクリックします。  
 
 publicのリポジトリを使用する場合はPublic Git repositoryに対象のリポジトリのURLを入力することで使用できます。  
-また、privateの場合はGitHubと連携することでも使用可能になります。
+また、privateの場合はGitHubと連携することで使用可能になります。
 今回はGit Hub連携させてみますので、`Connect GitHub`から連携してみましょう。
 ![Renderアプリ作成2](images/14-3-1-1-02.png) 
 
@@ -31,18 +31,15 @@ Nameはわかりやすい名前を設定しましょう。GitHubのリポジト�
 Regionは先ほど作成したDBに合わせます。
 
 Build Commandはデプロイするときにどのような設定でアプリを起動するかを決めるコマンドです。
-seedがある場合とない場合で異なりますので注意してください。
 
-**seedあり**
-``` ruby
-bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rails webpacker:compile && bundle exec rake db:migrate && bundle exec rails db:seed
-```
-
-**seedなし**
 ``` ruby
 bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rails webpacker:compile && bundle exec rake db:migrate
 ```
 
+seedデータをデプロイ時に`db:seed`することもできます。もし、seedデータを登録する場合には二重にデータが登録されるなど様々な不具合に繋がることもありますので、コードをしっかりと確認してから登録するようにしましょう。
+``` ruby
+bundle install && yarn install && bundle exec rake assets:precompile && bundle exec rake assets:clean && bundle exec rails webpacker:compile && bundle exec rake db:migrate && bundle exec rails db:seed
+```
 
 **Advancedの設定**  
 次はAdvancedの設定をします。
@@ -59,7 +56,7 @@ rm config/credentials.yml.enc config/master.key
 ```
 
 マスターキーの生成します。下記のコマンドを実行してください。  
-Macの場合
+Macの場合(Linuxの場合)
 ``` ruby
 EDITOR="code -w" bin/rails credentials:edit
 ```
