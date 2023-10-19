@@ -192,7 +192,7 @@ end
 各環境ファイルごとに設定が必要になります。
 下記に記載しているのは、`development`環境になります。本番環境で使用するには`config/environments/production.rb`の編集が必要です。
 今回はメール送信に、Gmailを使用しています。もし、設定を編集してもメールが届かない場合は、Gmail側の設定を確認してください。Gmailはセキュリティ対策のため、安全性が低いとみなしたアプリからのアクセスを拒否するようにデフォルトで設定されています。  
-また、`config.action_mailer.raise_delivery_errors`を`true`にすることでメールが送信できない場合のエラーを出力することができます。  
+また、`config.action_mailer.raise_delivery_errors`を`true`にすることでメールが送信できない場合のエラーを出力することができます。
 
 `config/environments/development.rb`
 
@@ -267,8 +267,8 @@ irb(main):001:0> test = ToDoTask.new(title:"テスト", description:"プレビ�
 irb(main):002:0> TodoTaskMailer.registration_mail(test).deliver
 ```
 
-`OpenSSL::SSL::SSLError`のエラーが発生し、メールの送信ができないことがあります。本来はセキュリティの都合上、TLS設定をするのが良いのですが、今回はエラーを回避するためにそれらのチェックを省く設定を行います。  
-以下のようにコードを修正してください。  
+`OpenSSL::SSL::SSLError`のエラーが発生し、メールの送信ができないことがあります。本来はセキュリティの都合上、SSL証明書の検証を行ったほうが良いのですが、今回はそれを省いた設定を行います。本番環境では避けるべき設定ですので注意してください。  
+以下のようにコードを修正してください。
 
 `config/environments/development.rb`
 ``` ruby
