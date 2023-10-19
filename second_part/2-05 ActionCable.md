@@ -135,22 +135,22 @@ var appRoom = consumer.subscriptions.create("RoomChannel", { // 修正
 ```
 import consumer from "./consumer"
 
-var appRoom = consumer.subscriptions.create("RoomChannel", { // 修正
+var appRoom = consumer.subscriptions.create("RoomChannel", {
         　・
         　・
 });
 
 // ここから追加
 document.addEventListener('DOMContentLoaded', function(){
-  const form = document.getElementById('message_form')
+  const form = document.getElementById('message_form');
   form.addEventListener('submit', function(e){
-    e.preventDefault()
-    var input = document.getElementById('message_field').value
-    appRoom.post_message(input)
-    document.getElementById('message_field').value = ''
-  })
-// ここまで追加
+    e.preventDefault();
+    var input = document.getElementById('message_field').value;
+    appRoom.post_message(input);
+    document.getElementById('message_field').value = '';
+  });
 });
+// ここまで追加
 ```
 
 試しにsubmitボタンを押下し、ブラウザのコンソールを確認してみましょう。
@@ -192,7 +192,7 @@ end
         　・
         　・
 received(data) {
-  console.log(data) // 追加
+  console.log(data); // 追加
 }
 post_message: function(message) { // 修正
   return this.perform('post_message', {message: 'chat_message'}); // 修正
@@ -241,10 +241,10 @@ post_message: function(message) {
           ・
           ・
 received(data) {
-  var element = document.createElement('div')
-  element.className = 'message'
-  element.innerHTML = `<p>${data.message}</p>`
-  document.getElementById('messages').appendChild(element)
+  var element = document.createElement('div');
+  element.className = 'message';
+  element.innerHTML = `<p>${data.message}</p>`;
+  document.getElementById('messages').appendChild(element);
 }
           ・
           ・
