@@ -104,15 +104,17 @@ Userモデルを作成します。
 画面で登録した内容が確認できるようにscaffoldで作成します。
 
 ```
+rails new active_job_sample
+cd active_job_sample
 rails g scaffold User name email
 rails db:migrate
 ```
 
 CSVファイルをアップロードする機能を作成します。
 
-`app/forms/upload_form.rb`
+`app/forms/upload_form.rb`(新規作成)
 
-```
+``` ruby
 require 'csv'
 class UploadForm
   include ActiveModel::Model
@@ -140,29 +142,40 @@ class UploadForm
 
   def save
     return false unless valid?
-    open(filename, "w") do |f|
-      f.write file.read
+    open(filename, "wb") do |f|
+      f.write file.read.encode('UTF-8', 'ASCII-8BIT', invalid: :replace, undef: :replace, replace: '')
     end
     true
   end
 end
 ```
 
-`config/routes.rb`
+controllerを作成します。
 
 ```
-get 'upload', to: 'csv#index'
-post 'upload', to: 'csv#upload'
+rails g controller csv_controller index
+```
+
+`config/routes.rb`
+
+``` ruby
+・
+・
+get 'upload', to: 'csv#index' # 編集
+post 'upload', to: 'csv#upload' # 追加
+・
+・
 ```
 
 `app/controllers/csv_controller.rb`
 
-```
+``` ruby
 class CsvController < ApplicationController
   def index
-    @upload_form = UploadForm.new
+    @upload_form = UploadForm.new # 追加
   end
 
+  # -- ここから追加 --
   def upload
     @upload_form = UploadForm.new(upload_form_params)
 
@@ -176,6 +189,7 @@ class CsvController < ApplicationController
   def upload_form_params
     params.fetch(:upload_form, {}).permit(:file)
   end
+  # -- ここまで追加 --
 end
 ```
 
@@ -204,7 +218,7 @@ end
 
 実際にファイルをアップロードしましょう。
 
-`https://hogehoge/upload`にアクセスしてファイルを選択してボタンをクリックしてみましょう。
+`http:/localhost:3000/upload`にアクセスしてファイルを選択してボタンをクリックしてみましょう。
 
 数秒後にレスポンスが帰ってきたかと思います。
 
@@ -214,7 +228,7 @@ end
 
 'Gemfile'
 
-```
+``` ruby
 gem 'resque'
 ```
 
@@ -228,20 +242,28 @@ bundle install
 
 `config/application.rb`
 
-```
-config.active_job.queue_adapter = :resque
+``` ruby
+・
+・
+module ActiveJobSample
+  class Application < Rails::Application
+    ・
+    ・
+    config.active_job.queue_adapter = :resque # 追加
+  end
+end
 ```
 
 `config/initializers/resque.rb`を新たに作成
 
-```
+``` ruby
 Resque.redis = 'localhost:6379'
 Resque.redis.namespace = "resque:app_name:#{Rails.env}" # アプリ毎に異なるnamespaceを定義しておく
 ```
 
 `lib/tasks/resque.rake`を新たに作成
 
-```
+``` ruby
 require 'resque/tasks'
 task 'resque:setup' => :environment
 ```
@@ -255,13 +277,13 @@ rails g job csv_import
 
 `app/jobs/csv_import_job.rb`
 
-```
+``` ruby
 class CsvImportJob < ApplicationJob
   queue_as :default
 
-  def perform(filename)
-    CSV.read(filename).each do |row|
-      User.create(name: row[0], email: row[1])
+  def perform(filename) #編集
+    CSV.read(filename).each do |row| # 追加
+      User.create(name: row[0], email: row[1]) # 追加
     end
   end
 end
@@ -269,12 +291,16 @@ end
 
 `app/forms/upload_form.rb`を以下のように修正します。
 
-```
+``` ruby
+・
+・
   def import
     return false unless save
     CsvImportJob.perform_later(filename)
     true
   end
+・
+・
 ```
 
 `Resque` は `redis` を利用してキューを管理しています。
@@ -299,7 +325,3 @@ QUEUE=default rails resque:work
 ここまでできたら、もう一度ファイルをアップロードしてみましょう。
 
 先ほどとは違い、すぐにレスポンスが返ってきました。
-
-
-
-
