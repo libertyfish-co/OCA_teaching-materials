@@ -1,4 +1,4 @@
-## 14.3 Ruby on Rails：ECサイトの開発 Herokuへのデプロイ2
+## 14.3 Ruby on Rails：ECサイトの開発 Renderへのデプロイ2
 
 ### 14.3.1.1 Renderの本番環境の作成と設定
 ここからはRender側で本番環境の設定をしていきます。
@@ -10,7 +10,7 @@
 
 publicのリポジトリを使用する場合はPublic Git repositoryに対象のリポジトリのURLを入力することで使用できます。  
 また、privateの場合はGitHubと連携することで使用可能になります。
-今回はGit Hub連携させてみますので、`Connect GitHub`から連携してみましょう。
+今回はGit Hub連携させてみますので、`Connect GitHub`から連携してみましょう。  
 ![Renderアプリ作成2](images/14-3-1-1-02.png) 
 
 連携が完了するとGitHubにあるリポジトリをConnect a repositoryから選択できるようになります。
@@ -148,10 +148,10 @@ push後に自動的にデプロイされます。
 デプロイの状態はDashboardにあるアプリを選択しEventsにある最新のイベントのDeployのリンクから確認することができます。
 
 以下のようになっていたら成功しています。  
-多少異なることもありますが、`Build successful 🎉`となっていれば成功しています。
+多少異なることもありますが、`Build successful 🎉`となっていれば成功しています。  
 ![デプロイ成功](images/14-3-1-2-02.png) 
 
-では、さっそく確認してみましょう。WEB SERVICEの名前の少し下にあるURLからサイトへ飛ぶことができます。
+では、さっそく確認してみましょう。WEB SERVICEの名前の少し下にあるURLからサイトへ飛ぶことができます。  
 ![URL確認1](images/14-3-1-2-03.png) 
 
 うまく表示されたでしょうか。  
