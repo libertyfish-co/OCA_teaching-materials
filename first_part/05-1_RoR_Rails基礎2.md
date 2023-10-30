@@ -99,7 +99,7 @@ __【テーブルの作成】__  
 中身を見てみると、以下のようになっています。  
 
 ```rb    
-class CreateUsers < ActiveRecord::Migration[6.1]
+class CreateUsers < ActiveRecord::Migration[7.1]
   def change
     create_table :users do |t|
       t.string :name

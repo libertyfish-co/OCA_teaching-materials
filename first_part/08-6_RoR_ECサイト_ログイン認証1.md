@@ -27,14 +27,24 @@ https://github.com/plataformatec/devise/wiki
 
 ### 8.6.3 Deviseのインストール
 
-`Gemfile`に`devise`を追記しましょう。
+まずは新しくアプリを作成します。
+
+```sh
+rails new devise_practice
+cd devise_practice
+```
+
+アプリが作成出来たら`Gemfile`に`devise`を追記しましょう。
 追記したら忘れずに `bundle install`を行いましょう。
 
 
 `Gemfile`
 
-```
-gem 'devise'
+```rb
+・
+・
+・
+gem 'devise' # 追加
 ```
 
 `bundle install`が完了したら下記のコマンドで`Devise`をインストールします。
