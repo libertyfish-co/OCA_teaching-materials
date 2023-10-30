@@ -7,23 +7,23 @@
 Model でバリデータを定義してそれが正しく定義されているか確認するテストを実装してみましょう。利用者は名前と電話番号を持ち、それらは必ず入力しなければならないとします。
 
 - app/models/user.rb
-```
-  class User < ApplicationRecord
-    validates :name, presence: true
-    validates :phone_number, presence: true
-  end
+```rb
+class User < ApplicationRecord
+  validates :name, presence: true
+  validates :phone_number, presence: true
+end
 ```
 
 また、テストデータはFactoryBotを利用するので次のように実装します。
 
 - spec/factories/users.rb
-```
-  FactoryBot.define do
-    factory :user do
-      name { Gimei.new.kanji }
-      phone_number { "XXX-YYYY-ZZZZ" }
-    end
+```rb
+FactoryBot.define do
+  factory :user do
+    name { Gimei.new.kanji }
+    phone_number { "XXX-YYYY-ZZZZ" }
   end
+end
 ```
 
 FactoryBotを使って実装したデータは`build(:user)`や`create(:user)`メソッドを使ってテストデータを作成することが出来ます。`rails console`コマンドでプロンプトを立ち上げて実行してみましょう。テストデータが作成されることが確認出来ましたか？
@@ -75,25 +75,27 @@ nameの値はGimeiによってランダムで作成されています。
 肝心のテストですが、利用者についてのテストは次のようになります。実際に入力してテストの結果が変更されることを確認してみましょう。
 
 - spec/models/user_spec.rb
-```
-  RSpec.describe User, type: :model do
-    it "is valid with name and phone number" do
-      user = build(:user)
-      expect(user).to be_valid
-    end
+```rb
+require 'rails_helper'
 
-    it "is invalid without name" do
-      user = build(:user, name: nil)
-      user.valid?
-      expect(user.errors[:name]).to include("can't be blank")
-    end
-
-    it "is invalid without phone number" do
-      user = build(:user, phone_number: nil)
-      user.valid?
-      expect(user.errors[:phone_number]).to include("can't be blank")
-    end
+RSpec.describe User, type: :model do
+  it "is valid with name and phone number" do
+    user = build(:user)
+    expect(user).to be_valid
   end
+
+  it "is invalid without name" do
+    user = build(:user, name: nil)
+    user.valid?
+    expect(user.errors[:name]).to include("can't be blank")
+  end
+
+  it "is invalid without phone number" do
+    user = build(:user, phone_number: nil)
+    user.valid?
+    expect(user.errors[:phone_number]).to include("can't be blank")
+  end
+end
 ```
 
 テストを実行します。
@@ -120,21 +122,23 @@ Finished in 0.30021 seconds (files took 1.36 seconds to load)
 
 先程の2つ目のテストコードはnameの値がnilのuserを作成して、userの作成が失敗することを確認していた部分を、nameに値が設定されるように修正してみましょう。
 
-```rb
 - spec/models/user_spec.rb
-  RSpec.describe User, type: :model do
+```rb
+require 'rails_helper'
+
+RSpec.describe User, type: :model do
 
 (中略)
 
-    it "is invalid without name" do
-      user = build(:user)
-      user.valid?
-      expect(user.errors[:name]).to include("can't be blank")
-    end
-
-(中略)
-
+  it "is invalid without name" do
+    user = build(:user)
+    user.valid?
+    expect(user.errors[:name]).to include("can't be blank")
   end
+
+(中略)
+
+end
 ```
 
 テストを実行します。
@@ -155,7 +159,7 @@ Failures:
 
   1) User is invalid without name
      Failure/Error: expect(user.errors[:name]).to include("can't be blank")
-       expected #<ActiveModel::DeprecationHandlingMessageArray([])> to include "can't be blank"
+       expected [] to include "can't be blank"
      # ./spec/models/user_spec.rb:12:in `block (2 levels) in <top (required)>'
 
 Finished in 0.32781 seconds (files took 1.39 seconds to load)
@@ -174,7 +178,7 @@ nameの値がnilでないのでuserの作成が成功し、テストの期待値
 
 - `describe(context)`
 引数にどのようなテストを行うか示すために、メソッド名やルーティングを記述してテストのグルーピングを行います。
-```
+```rb
   # Model の場合
   describe "#post" do
     # post メソッドのテスト
@@ -185,8 +189,8 @@ nameの値がnilでないのでuserの作成が成功し、テストの期待値
     # edit メソッドのテスト
   end
 ```
-`context`は`describe`のエイリアスですが、こちらは条件を記述します。
-```
+`context`は`describe`の内部で使用され、テストケースをさらに細分化するために使います。
+```rb
   describe "#post" do
     context "params is invalid" do
       # params に不正な値がある場合
@@ -195,7 +199,7 @@ nameの値がnilでないのでuserの作成が成功し、テストの期待値
 ```
 - `it`
 期待する結果を記述します。テスト結果が期待値であるかの検証しません。
-```
+```rb
   describe "POST #create" do
     context "with valid params" do
       it "creates a new User" do
@@ -210,7 +214,7 @@ nameの値がnilでないのでuserの作成が成功し、テストの期待値
   `change(User, :count).by(1)`
   - 新規作成に成功したら詳細ページに遷移する
   `redirect_to(User.last)`
-```
+```rb
   describe "POST #create" do
       context "with valid params" do
         it "creates a new User" do
@@ -279,7 +283,7 @@ RSpec.describe "Users", type: :system do
   describe "GET /users" do
     it "renders new user link" do
       visit users_path
-      assert_text "New User"
+      assert_text "New user"
     end
   end
 
@@ -298,7 +302,7 @@ RSpec.describe "Users", type: :system do
     it "renders a new user form" do
       visit users_path
 
-      click_on "New User"
+      click_on "New user"
       fill_in "Name", with: "User_Name"
       fill_in "Phone number", with: "XXX-YYYY-ZZZZ"
 
@@ -313,7 +317,7 @@ RSpec.describe "Users", type: :system do
     it "shows a details of a user" do
       visit edit_user_path(user)
 
-      assert_text "Editing User"
+      assert_text "Editing user"
 
       click_on "Update User"
       assert_text "User was successfully updated."
@@ -340,9 +344,9 @@ RSpec.describe "Users", type: :system do
     let!(:user) { create(:user) }
 
     it "redirect_to '/users'" do
-      visit users_path
+      visit user_path(user)
 
-      click_on 'Destroy'
+      click_on 'Destroy this user'
       expect(page).to have_content("User was successfully destroyed.")
     end
   end
@@ -390,7 +394,7 @@ Finished in 0.6424 seconds (files took 1.35 seconds to load)
     it "renders a new user form" do
       visit users_path
 
-      click_on "New User"
+      click_on "New user"
       # fill_in "Name", with: "User_Name"
       fill_in "Phone number", with: "XXX-YYYY-ZZZZ"
 
@@ -435,7 +439,7 @@ Failures:
      Failure/Error: assert_text "User was successfully created."
 
      Capybara::ExpectationNotMet:
-       expected to find text "User was successfully created." in "New User\n1 error prohibited this user from being saved:\nName can't be blank\nName\nPhone number\nBack"
+       expected to find text "User was successfully created." in "New user\n1 error prohibited this user from being saved:\nName can't be blank\nName\nPhone number\nBack to users"
      # ./spec/system/users_spec.rb:31:in `block (3 levels) in <main>'
 
 Finished in 0.55425 seconds (files took 1.4 seconds to load)
