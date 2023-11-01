@@ -36,8 +36,8 @@ Minitest::Testの他にRSpecというテスティングツールもあります�
 テスト基礎用のアプリケーションを作成しましょう。
 
 ```bash
-rails new rspec_practice
-cd rspec_practice
+cd
+rails new rspec_mockups
 ```
 
 #### 必要なgemのインストール
@@ -53,20 +53,15 @@ RSpecをRailsで利用するためのgem
 
 Gemfileにこれらのgemを追加してみましょう。テスティングツールは本番環境では利用しないのでGemfileのグループは`development`と`test`とします。
 
-```rb
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ]
-  
-# ここから追加
-  # Use RSpec
-  gem 'rspec-rails', '~> 4.0.1'
-  # Use FactoryBot
-  gem 'factory_bot_rails'
-  # Use gimei for generating a Japanese fake name
-  gem 'gimei'
-# ここまで追加
-end
+```
+  group :development, :test do
+    # Use RSpec
+    gem 'rspec-rails', '~> 4.0.1'
+    # Use FactoryBot
+    gem 'factory_bot_rails'
+    # Use gimei for generating a Japanese fake name
+    gem 'gimei'
+  end
 ```
 
 ```bash
@@ -81,12 +76,13 @@ RSpecを実行するにあたって、様々な設定が必要になります。
 
 設定ファイルを作成するために次のコマンドを実行してください。いくつかのフォルダ、ファイルが生成されます。
 
-```sh
-$ rails generate rspec:install
-      create  .rspec
-      create  spec
-      create  spec/spec_helper.rb
-      create  spec/rails_helper.rb
+```
+  $ rails generate rspec:install
+  Running via Spring preloader in process 54405
+        create  .rspec
+        create  spec
+        create  spec/spec_helper.rb
+        create  spec/rails_helper.rb
 ```
 
 生成されたファイルに次の内容を追加してください。
@@ -94,23 +90,17 @@ $ rails generate rspec:install
 - `.rspec`  
 
 ```
---require spec_helper
---format documentation 
+  --require spec_helper
+  --format documentation
 ```
 
 - `spec/rails_helper.rb`  
 
-```rb
-・
-・
-RSpec.configure do |config|
-  ・
-  ・
-# ここから追加
-  # Simplify syntax
-  config.include FactoryBot::Syntax::Methods
-# ここまで追加
-end
+```
+  RSpec.configure do |config|
+      # Simplify syntax
+      config.include FactoryBot::Syntax::Methods
+  end
 ```
 
 ##### Rails設定ファイルの修正
@@ -119,31 +109,25 @@ Minitest::TestがRailsでは標準のテスティングツールなのでRSpec�
 
 - `config/application.rb`
 
-```rb
-・
-・
-module RspecMockups
-  class Application < Rails::Application
-    ・
-    ・
-  # ここから追加
-    # Don't generate system test files.
-    config.generators.system_tests = nil
-  # ここまで追加
+```
+  module RspecMockups
+    class Application < Rails::Application
+      # Don't generate system test files.
+      config.generators.system_tests = nil
+    end
   end
-end
 ```
 
 - `config/initializers/generators.rb`（新規作成）
 
-```rb
-Rails.application.config.generators do |g|
-  g.test_framework :rspec
-  g.view_specs false
-  g.routing_specs false
-  g.helper_specs false
-  g.fixture_replacement :factory_bot, dir: 'spec/factories'
-end
+```
+  Rails.application.config.generators do |g|
+    g.test_framework :rspec
+    g.view_specs false
+    g.routing_specs false
+    g.helper_specs false
+    g.fixture_replacement :factory_bot, dir: 'spec/factories'
+  end
 ```
 
 ##### testフォルダの削除

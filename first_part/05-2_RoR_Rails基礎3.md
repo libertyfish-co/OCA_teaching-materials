@@ -8,14 +8,16 @@ __【users_controller.rb】__
 
 ```rb
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[ show edit update destroy ]
+  before_action :set_user, only: [:show, :edit, :update, :destroy]
 
-  # GET /users or /users.json
+  # GET /users
+  # GET /users.json
   def index
     @users = User.all
   end
 
-  # GET /users/1 or /users/1.json
+  # GET /users/1
+  # GET /users/1.json
   def show
   end
 
@@ -28,40 +30,45 @@ class UsersController < ApplicationController
   def edit
   end
 
-  # POST /users or /users.json
+  # POST /users
+  # POST /users.json
   def create
     @user = User.new(user_params)
 
     respond_to do |format|
       if @user.save
-        format.html { redirect_to user_url(@user), notice: "User was successfully created." }
+        format.html { redirect_to @user,
+        notice: 'User was successfully created.' }
         format.json { render :show, status: :created, location: @user }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # PATCH/PUT /users/1 or /users/1.json
+  # PATCH/PUT /users/1
+  # PATCH/PUT /users/1.json
   def update
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to user_url(@user), notice: "User was successfully updated." }
+        format.html { redirect_to @user,
+        notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # DELETE /users/1 or /users/1.json
+  # DELETE /users/1
+  # DELETE /users/1.json
   def destroy
-    @user.destroy!
-
+    @user.destroy
     respond_to do |format|
-      format.html { redirect_to users_url, notice: "User was successfully destroyed." }
+      format.html { redirect_to users_url,
+      notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -72,7 +79,7 @@ class UsersController < ApplicationController
       @user = User.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
+    # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
       params.require(:user).permit(:name, :email)
     end
@@ -131,37 +138,52 @@ scaffoldで生成した場合はこのように自動で追加してくれます
 
 __【/views/users/index.html.erb】__  
 今度は実際に表示されているViewファイルの中身を見てみましょう。  
-```html
-<p style="color: green"><%= notice %></p>
+```rb
+<p id="notice"><%= notice %></p>
 
 <h1>Users</h1>
 
-<div id="users">
-  <% @users.each do |user| %>
-    <%= render user %>
-    <p>
-      <%= link_to "Show this user", user %>
-    </p>
-  <% end %>
-</div>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
 
-<%= link_to "New user", new_user_path %>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td><%= link_to 'Show', user %></td>
+        <td><%= link_to 'Edit', edit_user_path(user) %></td>
+        <td><%= link_to 'Destroy', user,
+        method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
+<br>
+
+<%= link_to 'New User', new_user_path %>
 ```
 HTMLの知識がある人なら、このファイルを見た時違和感があったと思います。  
 上記のファイルには、通常のHTMLの構造でいうbodyの部分しか書かれていません。  
 それ以外の部分はどこに書かれているかというと、`/views/layouts/application.html.erb`というファイルに書かれています。  
-```html
+```rb
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Railsbasic</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MonkaRailsbasic</title>
     <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+    <%= stylesheet_link_tag    'application', media: 'all',
+    'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application',
+    'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>

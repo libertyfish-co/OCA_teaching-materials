@@ -75,9 +75,9 @@ Railsにはこれらを補助する機能が備わっています。
 それでは早速、インストールしたRailsを使用してアプリを作成しましょう。
 アプリの作成は以下のコマンドで行います。
 
-        rails new railsbasic
+        rails new monka-railsbasic
 
-これで"railsbasic"という名前のアプリ（プロジェクト）の雛形が出来上がります。
+これで"monka-railsbasic"という名前のアプリ（プロジェクト）の雛形が出来上がります。
 コマンドを実行すると以下のように、フォルダやファイルが大量に生成されているはずです。
 
  ![フォルダ](images/05-1-1.png)
@@ -87,7 +87,7 @@ Railsにはこれらを補助する機能が備わっています。
 
 今後の操作はアプリの中で行いたいので、以下のコマンドでディレクトリを移動しておきましょう。
 
-        cd railsbasic
+        cd monka-railsbasic
 
 次に以下のコマンドを実行してみてください。
 
@@ -107,8 +107,8 @@ Railsにはこれらを補助する機能が備わっています。
 `-b 0.0.0.0`はbindオプションで、IPアドレス等を制御します。
 `-p 8080`はportオプションで、アクセスポート番号を指定します。
 
-コンソール内に表示されている、`http://0.0.0.0:8080`をクリックして、
-"open"を選ぶ、もしくはブラウザのアドレスバーに`http://localhost:8080`と入力することでブラウザで画面が表示されます。
+コンソール内に表示されている、「http://0.0.0.0:8080」 をクリックして、
+"open"を選ぶとブラウザで画面が表示されます。
 
 まだデフォルトの画面が表示されるだけですが、きちんと表示されていますね。
 ここをベースにアプリを作成していくことになります。
@@ -120,29 +120,93 @@ Railsにはこれらを補助する機能が備わっています。
 
 次の一覧が表示されます。
 
-```bash
-about
-action_mailbox:ingress:exim
-action_mailbox:ingress:postfix
-action_mailbox:ingress:qmail
-action_mailbox:install
-action_mailbox:install:migrations
-action_text:install
-action_text:install:migrations
-active_storage:install
-app:template
-app:update
-assets:clean[keep]
-assets:clobber
-assets:environment
-assets:precompile
-cache_digests:dependencies
-cache_digests:nested_dependencies
-credentials:diff
-credentials:edit
-credentials:show
-db:create
-・
-・
-・
-```
+```rb
+  about
+  action_mailbox:ingress:exim
+  action_mailbox:ingress:postfix
+  action_mailbox:ingress:qmail
+  action_mailbox:install
+  action_mailbox:install:migrations
+  action_text:install
+  action_text:install:migrations
+  active_storage:install
+  app:template
+  app:update
+  assets:clean[keep]
+  assets:clobber
+  assets:environment
+  assets:precompile
+  cache_digests:dependencies
+  cache_digests:nested_dependencies
+  credentials:diff
+  credentials:edit
+  credentials:show
+  db:create
+  db:drop
+  db:environment:set
+  db:fixtures:load
+  db:migrate
+  db:migrate:down
+  db:migrate:redo
+  db:migrate:status
+  db:migrate:up
+  db:prepare
+  db:reset
+  db:rollback
+  db:schema:cache:clear
+  db:schema:cache:dump
+  db:schema:dump
+  db:schema:load
+  db:seed
+  db:seed:replant
+  db:setup
+  db:structure:dump
+  db:structure:load
+  db:system:change
+  db:version
+  destroy
+  dev:cache
+  encrypted:edit
+  encrypted:show
+  initializers
+  log:clear
+  middleware
+  notes
+  restart
+  routes
+  runner
+  secret
+  secrets:edit
+  secrets:setup
+  secrets:show
+  stats
+  test:all
+  test:db
+  time:zones[country_or_offset]
+  tmp:clear
+  tmp:create
+  version
+  webpacker
+  webpacker:binstubs
+  webpacker:check_binstubs
+  webpacker:check_node
+  webpacker:check_yarn
+  webpacker:clean[keep,age]
+  webpacker:clobber
+  webpacker:compile
+  webpacker:info
+  webpacker:install
+  webpacker:install:angular
+  webpacker:install:coffee
+  webpacker:install:elm
+  webpacker:install:erb
+  webpacker:install:react
+  webpacker:install:stimulus
+  webpacker:install:svelte
+  webpacker:install:typescript
+  webpacker:install:vue
+  webpacker:verify_install
+  webpacker:yarn_install
+  yarn:install
+  zeitwerk:check
+ ```
