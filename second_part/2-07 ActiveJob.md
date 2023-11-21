@@ -24,7 +24,7 @@ Railsで非同期処理を実装する場合は、これらのGemを利用して
 
 この3つのGemの書き方を簡単に紹介します。
 
-```
+```rb
 class SomeJob
   include Sidekiq::Worker
   
@@ -36,7 +36,7 @@ end
 SomeJob.perform_asyncd
 ```
 
-```
+```rb
 class SomeJob
   @queue = :default
   
@@ -48,7 +48,7 @@ end
 Resque.enqueue(SomeJob, 'arg')
 ```
 
-```
+```rb
 class SomeClass
   def some_method
     # ここに時間のかかる処理を書く
@@ -64,7 +64,7 @@ SomeClass.new.delay.some_method
 
 それではActiveJobを使った場合の実装を見てみましょう。
 
-```
+```rb
 class SomeJob
   def perform(*args)
     # ここに時間のかかる処理を書く
@@ -103,7 +103,7 @@ config.active_job.queue_adapter = :delayed_job
 Userモデルを作成します。
 画面で登録した内容が確認できるようにscaffoldで作成します。
 
-```
+```sh
 rails new active_job_sample
 cd active_job_sample
 rails g scaffold User name email
@@ -114,8 +114,9 @@ CSVファイルをアップロードする機能を作成します。
 
 `app/forms/upload_form.rb`(新規作成)
 
-``` ruby
+``` rb
 require 'csv'
+
 class UploadForm
   include ActiveModel::Model
 
@@ -152,24 +153,26 @@ end
 
 controllerを作成します。
 
-```
-rails g controller csv_controller index
+```sh
+$ rails g controller csv_controller index
 ```
 
 `config/routes.rb`
 
-``` ruby
+``` rb
+・
 ・
 ・
 get 'upload', to: 'csv#index' # 編集
 post 'upload', to: 'csv#upload' # 追加
 ・
 ・
+・
 ```
 
 `app/controllers/csv_controller.rb`
 
-``` ruby
+``` rb
 class CsvController < ApplicationController
   def index
     @upload_form = UploadForm.new # 追加
@@ -195,7 +198,7 @@ end
 
 `views/csv/index.html.erb`
 
-```
+```html
 <h1>upload csv</h1>
 <p><%= notice %></p>
 <% if @upload_form.errors.any? %>
@@ -213,12 +216,11 @@ end
   <%= f.file_field :file %>
   <%= f.submit %>
 <% end %>
-
 ```
 
 実際にファイルをアップロードしましょう。
 
-`http:/localhost:3000/upload`にアクセスしてファイルを選択してボタンをクリックしてみましょう。
+<http:/localhost:3000/upload>にアクセスしてファイルを選択してボタンをクリックしてみましょう。
 
 数秒後にレスポンスが帰ってきたかと思います。
 
@@ -228,13 +230,16 @@ end
 
 'Gemfile'
 
-``` ruby
+``` rb
+・
+・
+・
 gem 'resque'
 ```
 
 Gemfileに追記したら 'bundle install'を行います。
 
-```
+```sh
 bundle install
 ```
 
@@ -242,11 +247,13 @@ bundle install
 
 `config/application.rb`
 
-``` ruby
+``` rb
+・
 ・
 ・
 module ActiveJobSample
   class Application < Rails::Application
+    ・
     ・
     ・
     config.active_job.queue_adapter = :resque # 追加
@@ -256,14 +263,14 @@ end
 
 `config/initializers/resque.rb`を新たに作成
 
-``` ruby
+``` rb
 Resque.redis = 'localhost:6379'
 Resque.redis.namespace = "resque:app_name:#{Rails.env}" # アプリ毎に異なるnamespaceを定義しておく
 ```
 
 `lib/tasks/resque.rake`を新たに作成
 
-``` ruby
+``` rb
 require 'resque/tasks'
 task 'resque:setup' => :environment
 ```
@@ -271,13 +278,13 @@ task 'resque:setup' => :environment
 
 ここまでできたらJobを作成して、非同期処理になるように変更しましょう。
 
-```
+```sh
 rails g job csv_import
 ```
 
 `app/jobs/csv_import_job.rb`
 
-``` ruby
+``` rb
 class CsvImportJob < ApplicationJob
   queue_as :default
 
@@ -291,7 +298,8 @@ end
 
 `app/forms/upload_form.rb`を以下のように修正します。
 
-``` ruby
+``` rb
+・
 ・
 ・
   def import
@@ -301,24 +309,25 @@ end
   end
 ・
 ・
+・
 ```
 
 `Resque` は `redis` を利用してキューを管理しています。
 
-```
+```sh
 redis-server
 ```
 
 redisがインストールされていない場合は以下のコマンドでインストールしましょう。
 
-```
+```sh
 $ sudo apt install redis-server
 ```
 
 
 最後に実際にキューを読んで処理を行うプロセスを起動しましょう。
 
-```
+```sh
 QUEUE=default rails resque:work
 ```
 
