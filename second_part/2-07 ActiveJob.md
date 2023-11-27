@@ -154,7 +154,7 @@ end
 controllerを作成します。
 
 ```sh
-$ rails g controller csv_controller index
+rails g controller csv_controller index
 ```
 
 `config/routes.rb`
@@ -321,7 +321,7 @@ redis-server
 redisがインストールされていない場合は以下のコマンドでインストールしましょう。
 
 ```sh
-$ sudo apt install redis-server
+sudo apt install redis-server
 ```
 
 
